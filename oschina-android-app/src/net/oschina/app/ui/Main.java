@@ -195,7 +195,7 @@ public class Main extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        //注册广播接收器
+        //注册广播接收器(插收动弹		在UIHelper.sendBroadCastTweet调用)
     	tweetReceiver = new TweetReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("net.oschina.app.action.APP_TWEETPUB");
@@ -213,8 +213,8 @@ public class Main extends BaseActivity {
         this.initPageScroll();        
         this.initFrameButton();
         this.initBadgeView();
-        this.initQuickActionGrid();
-        this.initFrameListView();
+        this.initQuickActionGrid(); //初始化快捷栏
+        this.initFrameListView();//初始化所有ListView
         
         //检查新版本
         if(appContext.isCheckUp()){
