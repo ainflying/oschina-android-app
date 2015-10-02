@@ -98,6 +98,9 @@ public class Main extends BaseActivity {
 	private int curTweetCatalog = TweetList.CATALOG_LASTEST;
 	private int curActiveCatalog = ActiveList.CATALOG_LASTEST;
 	
+	/**
+	 * (???)PullToRefreshListView 未详细看懂
+	 */
 	private PullToRefreshListView lvNews;
 	private PullToRefreshListView lvBlog;
 	private PullToRefreshListView lvQuestion;
@@ -201,19 +204,54 @@ public class Main extends BaseActivity {
         filter.addAction("net.oschina.app.action.APP_TWEETPUB");
         registerReceiver(tweetReceiver, filter);
         
+        /**
+         * 这里使用了(AppContext)进行强转，为什么可以直接强转？因为在 AndroidManifest.xml 中注册了！
+         * 新手看懂这一点不容易啊。
+         * <application android:name=".AppContext" android:icon="@drawable/icon" android:label="@string/app_name" >
+         */
         appContext = (AppContext)getApplication();
+        
         //网络连接判断
         if(!appContext.isNetworkConnected())
         	UIHelper.ToastMessage(this, R.string.network_not_connected);
+        
+        /**
+         * 从这里可以看出，android其实就是一个java应用程序
+         * 它这里的用户信息其实都是存放在AppConfig.appConfig 的静态变量里。
+         * cookkie 也是存放在 AppConfig.CONF_COOKIE的变量里
+         */
         //初始化登录
         appContext.initLoginInfo();
-		
+        /**
+         * 初始化头部视图,并绑定图标的点击事件
+         */
 		this.initHeadView();
+		/**
+		 * 初始化底部栏,并绑定图标的点击事件
+		 */
         this.initFootBar();
-        this.initPageScroll();        
+        /**
+         * 初始化水平滚动翻页???这个无完全看懂
+         */
+        this.initPageScroll();      
+        /**
+         * 初始化各个主页的按钮(资讯、问答、动弹、动态、留言)
+         */
         this.initFrameButton();
+        
+        /***
+         * 初始化通知信息标签控件(???)
+         */
         this.initBadgeView();
+        
+        /**
+         * 初始化快捷栏(???)
+         */
         this.initQuickActionGrid(); //初始化快捷栏
+        
+        /**
+         * 初始化所有ListView
+         */
         this.initFrameListView();//初始化所有ListView
         
         //检查新版本
@@ -451,6 +489,13 @@ public class Main extends BaseActivity {
         		UIHelper.showNewsRedirect(view.getContext(), news);
         	}        	
 		});
+        
+        /**
+         * onSCroll在listview滑动过程中被调用，可以获取到listview有多少条item以及现在显示到了第几条等等一些信息。
+         * onScrollStateChanged在listview状态改变时被调用，可以用来获取当前listview的状态：空闲SCROLL_STATE_IDLE 、
+         * 滑动SCROLL_STATE_TOUCH_SCROLL和惯性滑动SCROLL_STATE_FLING
+         * onScroll 会优先运行于setOnScrollListener
+         */
         lvNews.setOnScrollListener(new AbsListView.OnScrollListener() {
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 				lvNews.onScrollStateChanged(view, scrollState);
